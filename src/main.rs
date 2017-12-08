@@ -1,5 +1,6 @@
 use std::fs::File;
 use std::io::Read;
+use std::collections::HashMap;
 
 enum Part{
     PartOne,
@@ -18,6 +19,12 @@ fn main() {
 
     let hash:u32 = day_two(Part::PartTwo);
     println!("Day 2 Part Two Spreadsheet Hash: {}", hash);
+
+    let distance = day_three(Part::PartOne);
+    println!("Day 3 Part One Distance: {}", distance);
+
+    let value = day_three(Part::PartTwo);
+    println!("Day 3 Part Two Value: {}", value);
 }
 
 fn day_one(part:Part) -> u32{
@@ -78,4 +85,104 @@ fn day_two(part:Part) -> u32{
     }
 
     sum
+}
+
+
+#[derive(Hash, Eq, PartialEq, Debug, Clone, Copy)]
+struct Point{
+    x: i32,
+    y: i32,
+}
+
+
+#[derive(Debug, Clone, Copy)]
+enum Direction{
+    Right,
+    Up,
+    Down,
+    Left,
+}
+
+fn get_neighbors(pos:Point) -> Vec<Point> {
+    let mut neighbors = Vec::with_capacity(8);
+
+    for i in -1..2 {
+        for j in -1..2{
+            if i==0 && j==0 {continue;}
+
+            neighbors.push(Point{x:pos.x+i, y:pos.y+j});
+        }
+    }
+
+    neighbors
+}
+
+fn day_three(part:Part) -> u32{
+    let mut pos = String::new();
+    let mut file = File::open("day3.txt").unwrap();
+    file.read_to_string(&mut pos).unwrap();
+
+    let pos:u32 = pos.trim().parse().unwrap();
+
+    let mut result:u32 = 0;
+
+    let mut grid_map = HashMap::new();
+
+    let mut spiral_directions = vec![Direction::Up, Direction::Left,
+                                Direction::Down, Direction::Right]
+                                    .into_iter().cycle();
+    let mut travel_direction = spiral_directions.next().unwrap();
+    let mut check_direction = spiral_directions.next().unwrap();
+
+    grid_map.insert(Point{x:0, y:0}, 1);
+
+    let mut cursor_pos = Point{x:1, y:0};
+
+    for i in 2..pos+1 {
+
+        match part{
+            Part::PartOne => {grid_map.insert(cursor_pos, i);},
+            Part::PartTwo => {
+                let mut sum = 0;
+                for neighbor in get_neighbors(cursor_pos).into_iter() {
+                    match grid_map.get(&neighbor) {
+                        Some(value) => sum = sum + value,
+                        None => continue,
+                    }
+                }
+                grid_map.insert(cursor_pos, sum);
+
+                if sum > pos {
+                    result = sum;
+                    break;
+                }
+            },
+        }
+
+        if i == pos{
+            result = (cursor_pos.x.abs() + cursor_pos.y.abs()) as u32;
+        }
+
+        match travel_direction {
+            Direction::Up => cursor_pos.y += 1,
+            Direction::Left => cursor_pos.x += -1,
+            Direction::Down => cursor_pos.y += -1,
+            Direction::Right => cursor_pos.x += 1,
+        }
+
+        let check_pos = match check_direction{
+            Direction::Up => Point{x:cursor_pos.x, y:cursor_pos.y+1},
+            Direction::Left => Point{x:cursor_pos.x-1, y:cursor_pos.y},
+            Direction::Down => Point{x:cursor_pos.x, y:cursor_pos.y-1},
+            Direction::Right => Point{x:cursor_pos.x+1, y:cursor_pos.y},
+        };
+
+        if !grid_map.contains_key(&check_pos) {
+            travel_direction = check_direction;
+            check_direction = spiral_directions.next().unwrap();
+        }
+
+    }
+
+    result
 }
