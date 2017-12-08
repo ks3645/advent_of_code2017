@@ -31,6 +31,12 @@ fn main() {
 
     let count = day_four(Part::PartTwo);
     println!("Day 4 Part Two Valid Count: {}", count);
+
+    let count = day_five(Part::PartOne);
+    println!("Day 5 Part One Move Count: {}", count);
+
+    let count = day_five(Part::PartTwo);
+    println!("day 5 Part Two Move Count: {}", count);
 }
 
 fn day_one(part:Part) -> u32{
@@ -219,6 +225,38 @@ fn day_four(part:Part) -> u32{
                 }
             }
         }
+        sum += 1;
+    }
+
+    sum
+}
+
+fn day_five(part:Part) -> u32{
+    let mut maze = String::new();
+    let mut file = File::open("day5.txt").unwrap();
+    file.read_to_string(&mut maze).unwrap();
+
+    let mut sum:u32 = 0;
+
+    let mut instructions:Vec<i32> = Vec::new();
+
+    for line in maze.split('\n'){
+        if line.is_empty() {continue;}
+
+        instructions.push(line.parse().unwrap());
+    }
+    
+    let mut pos:i32 = 0;
+
+    while let Some(result) = instructions.to_vec().get(pos as usize) {
+        instructions[pos as usize] += match part {
+            Part::PartOne => 1,
+            Part::PartTwo => {
+                if *result >= 3 { -1}
+                else {1}
+            }
+        };
+        pos = pos + *result;
         sum += 1;
     }
 
