@@ -1,13 +1,14 @@
 use std::fs::File;
 use std::io::Read;
 use std::collections::HashMap;
-
+use std::collections::HashSet;
 enum Part{
     PartOne,
     PartTwo,
 }
 
 fn main() {
+/*
     let solution:u32 = day_one(Part::PartOne);
     println!("Day 1 Part One Captcha Solution: {}", solution);
 
@@ -36,7 +37,13 @@ fn main() {
     println!("Day 5 Part One Move Count: {}", count);
 
     let count = day_five(Part::PartTwo);
-    println!("day 5 Part Two Move Count: {}", count);
+    println!("Day 5 Part Two Move Count: {}", count);
+*/
+    let cycles = day_six(Part::PartOne);
+    println!("Day 6 Part One Cycle Count: {}", cycles);
+
+    let loop_count = day_six(Part::PartTwo);
+    println!("Day 6 Part Two Loop Cycle Count: {}", loop_count);
 }
 
 fn day_one(part:Part) -> u32{
@@ -261,4 +268,43 @@ fn day_five(part:Part) -> u32{
     }
 
     sum
+}
+
+fn day_six(part:Part) -> u32{
+    let mut input = String::new();
+    let mut file = File::open("day6.txt").unwrap();
+    file.read_to_string(&mut input).unwrap();
+
+    let mut banks:Vec<u32> = input.split_whitespace()
+                                    .map(|s| s.parse().unwrap()).collect();
+
+    let mut sum:u32 = 0;
+
+    let mut states = HashMap::new(); 
+
+    states.insert(banks.to_vec(), sum);
+
+    loop {
+        let mut max:(usize, u32) = (0, 0);
+        for i in 0..banks.len() {
+            if banks[i] > max.1 {max = (i, banks[i]);}
+        }
+
+        banks[max.0] = 0;
+
+        for i  in 0..max.1 {
+            let pos = (max.0 + i as usize + 1) % banks.len();
+            banks[pos] += 1;
+        }
+
+        sum += 1;
+        if states.contains_key(&banks){ break;}
+    
+        states.insert(banks.to_vec(), sum);
+    }
+
+    match part {
+        Part::PartOne => sum,
+        Part::PartTwo => sum - states.get(&banks).unwrap(),
+    }
 }
