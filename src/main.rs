@@ -308,3 +308,13 @@ fn day_six(part:Part) -> u32{
         Part::PartTwo => sum - states.get(&banks).unwrap(),
     }
 }
+
+fn day_seven(part:Part) -> String{
+    let mut input = String::new();
+    let mut file = File::open("day7.txt").unwrap();
+    file.read_to_string(&mut input).unwrap();
+
+    let out = String::new();
+
+    out
+}
