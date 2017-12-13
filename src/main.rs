@@ -2,6 +2,9 @@ use std::fs::File;
 use std::io::Read;
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::iter::FromIterator;
+use std::ops::Sub;
+
 enum Part{
     PartOne,
     PartTwo,
@@ -38,12 +41,15 @@ fn main() {
 
     let count = day_five(Part::PartTwo);
     println!("Day 5 Part Two Move Count: {}", count);
-*/
+
     let cycles = day_six(Part::PartOne);
     println!("Day 6 Part One Cycle Count: {}", cycles);
 
     let loop_count = day_six(Part::PartTwo);
     println!("Day 6 Part Two Loop Cycle Count: {}", loop_count);
+*/
+    let name = day_seven(Part::PartOne);
+    println!("Day 7 Part One Bottom Program: {}", name);
 }
 
 fn day_one(part:Part) -> u32{
@@ -82,10 +88,7 @@ fn day_two(part:Part) -> u32{
 
     let mut sum:u32 = 0;
 
-    for line in spreadsheet.split('\n') {
-
-        if line.is_empty() {continue;}
-
+    for line in spreadsheet.lines() {
         let mut nums:Vec<u32> = line.split_whitespace()
             .map(|s| s.parse().unwrap()).collect();
 
@@ -213,9 +216,7 @@ fn day_four(part:Part) -> u32{
     
     let mut sum:u32 = 0;
     
-    'lines: for passphrase in database.split('\n') {
-        if passphrase.is_empty() {continue;}
-
+    'lines: for passphrase in database.lines() {
         let words:Vec<&str> = passphrase.split_whitespace().collect();
 
         'outer: for i in 0..words.len(){
@@ -247,9 +248,7 @@ fn day_five(part:Part) -> u32{
 
     let mut instructions:Vec<i32> = Vec::new();
 
-    for line in maze.split('\n'){
-        if line.is_empty() {continue;}
-
+    for line in maze.lines(){
         instructions.push(line.parse().unwrap());
     }
     
@@ -309,12 +308,47 @@ fn day_six(part:Part) -> u32{
     }
 }
 
+#[derive(Hash, Eq, PartialEq, Clone)]
+struct Program {
+    weight:u32,
+    holding:Vec<String>,
+}
+
 fn day_seven(part:Part) -> String{
     let mut input = String::new();
     let mut file = File::open("day7.txt").unwrap();
     file.read_to_string(&mut input).unwrap();
 
-    let out = String::new();
+    let mut out = String::new();
+
+    let program_strings:Vec<String> = input.lines()
+                                        .map(|s| s.replace(",", ""))
+                                        .map(|s| s.replace("->",""))
+                                        .map(|s| s.replace("(", ""))
+                                        .map(|s| s.replace(")", ""))
+                                        .collect();
+    
+    let mut programs = HashMap::new();
+    let mut holding_names = HashSet::new();
+
+    for s in program_strings {
+        let mut links = Vec::new();
+
+        let mut tokens = s.split_whitespace();
+
+        let prog = String::from(tokens.next().unwrap());
+        let weight:u32 = tokens.next().unwrap().parse().unwrap();
+
+        while let Some(name) = tokens.next() {
+            holding_names.insert(String::from(name));
+            links.push(String::from(name));
+        }
+        
+        programs.insert(prog, Program{weight:weight, holding:links});
+    }
+   
+    let root_set = &HashSet::from_iter(programs.keys()) - &holding_names;
+    out = root_set.iter().next().unwrap();
 
     out
 }
