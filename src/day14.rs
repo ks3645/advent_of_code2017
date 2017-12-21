@@ -51,7 +51,7 @@ pub fn solve(part: Part) -> i32 {
                                 if grid[pos.x as usize][pos.y as usize] == -1 {
 
                                     grid[pos.x as usize][pos.y as usize] = region_num;
-                                    
+
                                     for neighbor in utils::get_neighbors(pos) {
                                         if !(neighbor.x < 0 || neighbor.x >= ROWS as i32
                                             || neighbor.y < 0 || neighbor.y >= ROWS as i32) {
