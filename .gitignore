@@ -11,3 +11,7 @@ Cargo.lock
 
 # Vim swp files
 *.swp
+
+# IntelliJ IDEA project files
+/.idea/
+*.iml
