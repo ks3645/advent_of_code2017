@@ -1,7 +1,9 @@
 use std::fs::File;
 use std::io::Read;
 use std::io;
+use std::ops::Add;
 use std::ops::AddAssign;
+use std::fmt::Write;
 
 pub enum Part {
     PartOne,
@@ -20,6 +22,35 @@ pub struct Point {
     pub y: i32,
 }
 
+impl Point {
+    pub fn n() -> Self{
+        Point{x:0, y:1}
+    }
+
+    pub fn w() -> Self{
+        Point{x:-1, y:0}
+    }
+
+    pub fn s() -> Self{
+        Point{x:0, y:-1}
+    }
+
+    pub fn e() -> Self{
+        Point{x:1, y:0}
+    }
+}
+
+impl Add for Point {
+    type Output = Point;
+
+    fn add(self, other: Point) -> Point {
+        Point{
+            x: self.x + other.x,
+            y: self.y + other.y,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy)]
 pub enum Direction {
     Right,
@@ -28,7 +59,11 @@ pub enum Direction {
     Left,
 }
 
-pub fn get_neighbors(pos: Point) -> Vec<Point> {
+pub fn get_neighbors(pos:Point) -> Vec<Point> {
+    vec![pos+Point::n(), pos+Point::w(), pos+Point::s(), pos+Point::e()]
+}
+
+pub fn get_neighbors_diag(pos: Point) -> Vec<Point> {
     let mut neighbors = Vec::with_capacity(8);
 
     for i in -1..2 {
@@ -87,4 +122,43 @@ impl AddAssign for HexTile {
             t: self.t + other.t,
         };
     }
+}
+
+pub fn knot_hash(key:String) -> String {
+    const LIST_SIZE:usize = 256;
+    const SALT:[u32;5] = [17, 31, 73, 47, 23];
+    const ROUND_COUNT:u32 = 64;
+
+    let mut list:Vec<u32> = (0..LIST_SIZE as u32).collect();
+    let mut lengths:Vec<u32> = key.trim().bytes().map(|b| b as u32).collect();
+
+    lengths.extend_from_slice(&SALT);
+
+    let mut skip_size = 0;
+    let mut pos: usize = 0;
+
+    for round in 0..ROUND_COUNT {
+        for l in lengths.clone() {
+            let mut sublist = Vec::new();
+            for i in 0..l {
+                sublist.push(list[(pos + i as usize) % LIST_SIZE]);
+            }
+            for (i, element) in sublist.iter().rev().enumerate() {
+                list[(pos + i as usize) % LIST_SIZE] = element.clone();
+            }
+            pos += l as usize + skip_size as usize;
+            skip_size += 1;
+        }
+    }
+
+    let mut hash = String::new();
+    for i in 0..16 {
+        let mut num = list[16*i as usize];
+        for j in 1..16 {
+            num ^= list[16*i as usize + j as usize];
+        }
+        write!(&mut hash, "{:02x}", num).unwrap();
+    }
+
+    hash
 }

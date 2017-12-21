@@ -53,7 +53,7 @@ pub fn solve(part:Part) -> String {
                 for j in 1..16 {
                     num ^= list[16*i as usize + j as usize];
                 }
-                write!(&mut hash, "{:x}", num).unwrap();
+                write!(&mut hash, "{:02x}", num).unwrap();
             }
             hash
         }
