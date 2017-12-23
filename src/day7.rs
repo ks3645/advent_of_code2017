@@ -48,8 +48,72 @@ pub fn solve(part: Part) -> String {
 
     match part {
         Part::PartOne => { out = root; }
-        Part::PartTwo => {}
+        Part::PartTwo => {
+            match weigh_tree(&programs, &root) {
+                WeighResult::Weight(w) => {out = format!("Total Weight: {}", w);},
+                WeighResult::ImbalancedNode(name, adjust) => {
+                    out = (programs.get(&name).unwrap().weight as i32 + adjust).to_string();
+                },
+            }
+        }
     }
 
     out
+}
+
+enum WeighResult {
+    Weight(u32),
+    ImbalancedNode(String, i32),
+}
+
+fn weigh_tree(tree:&HashMap<String, Program>, root:&str) -> WeighResult {
+    let tree_clone = tree.clone();
+    let root_node = tree_clone.get(root).unwrap();
+    let branches = &root_node.holding;
+
+    let mut weight = root_node.weight;
+
+    if branches.is_empty() {return WeighResult::Weight(weight);}
+
+    let mut branch_weights = Vec::new();
+
+    for branch in branches {
+        match weigh_tree(&tree, branch) {
+            WeighResult::Weight(w) => {
+                branch_weights.push(w);
+            },
+            WeighResult::ImbalancedNode(name, adjust) => {
+                return WeighResult::ImbalancedNode(name, adjust);
+            },
+        }
+    }
+
+    if branch_weights.iter().all(|&x| x == *branch_weights.first().unwrap()) {
+        weight += branch_weights.iter().sum();
+    }
+    else {
+        let mut culprit = String::new();
+        let mut adjust:i32 = 0;
+
+        let mut check_one = branch_weights[0]; //safe because iter.all() above is true if empty
+        let mut check_two = branch_weights[1]; //safe due to problem specification
+        for (name, weight) in branches.iter().zip(branch_weights.iter()) {
+            if weight != &check_one && weight == &check_two {
+                culprit = branches[0].to_string();
+                adjust = *weight as i32 - branch_weights[0] as i32;
+            }
+            if weight != &check_one && weight != &check_two {
+                culprit = name.to_string();
+                adjust = branch_weights[0] as i32 - *weight as i32;
+            }
+            if weight == &check_one && weight != &check_two {
+                culprit = branches[1].to_string();
+                adjust = *weight as i32 - branch_weights[1] as i32;
+            }
+        }
+
+        return WeighResult::ImbalancedNode(culprit, adjust);
+    }
+
+    WeighResult::Weight(weight)
 }

@@ -137,7 +137,7 @@ pub fn knot_hash(key:String) -> String {
     let mut skip_size = 0;
     let mut pos: usize = 0;
 
-    for round in 0..ROUND_COUNT {
+    for _ in 0..ROUND_COUNT {
         for l in lengths.clone() {
             let mut sublist = Vec::new();
             for i in 0..l {
