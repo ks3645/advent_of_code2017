@@ -23,6 +23,7 @@ pub struct Point {
 }
 
 impl Point {
+    //Cartesian Coordinates
     pub fn n() -> Self{
         Point{x:0, y:1}
     }
@@ -38,6 +39,23 @@ impl Point {
     pub fn e() -> Self{
         Point{x:1, y:0}
     }
+
+    //Screen Coordinates
+    pub fn up() -> Self{
+        Point{x:0, y:-1}
+    }
+
+    pub fn left() -> Self{
+        Point{x:-1, y:0}
+    }
+
+    pub fn down() -> Self{
+        Point{x:0, y:1}
+    }
+
+    pub fn right() -> Self{
+        Point{x:1, y:0}
+    }
 }
 
 impl Add for Point {
@@ -48,6 +66,15 @@ impl Add for Point {
             x: self.x + other.x,
             y: self.y + other.y,
         }
+    }
+}
+
+impl AddAssign for Point {
+    fn add_assign(&mut self, other:Self) {
+        *self = Point {
+            x: self.x + other.x,
+            y: self.y + other.y,
+        };
     }
 }
 
