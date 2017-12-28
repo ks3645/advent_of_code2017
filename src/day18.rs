@@ -1,6 +1,7 @@
 use utils;
 use utils::Part;
 use std::collections::HashMap;
+use std::collections::VecDeque;
 
 enum Program {
     Zero,
@@ -14,7 +15,7 @@ pub fn solve(part: Part) -> i32 {
     let mut out = 0;
 
     let mut registers:(HashMap<&str, i64>, HashMap<&str,i64>) = (HashMap::new(), HashMap::new());
-    let mut message_queues:(Vec<i64>,Vec<i64>) = (Vec::new(), Vec::new());
+    let mut message_queues:(VecDeque<i64>,VecDeque<i64>) = (VecDeque::new(), VecDeque::new());
     let mut waiting = (false, false);
     let mut last_played = 0;
     let mut instructions = Vec::new();
@@ -28,14 +29,12 @@ pub fn solve(part: Part) -> i32 {
     let mut active_program = Program::Zero;
     registers.0.insert("p", 0);
     registers.1.insert("p", 1);
+    registers.0.insert("1", 1); //wow I'm an idiot
+    registers.1.insert("1", 1);
 
     let mut sent_count = 0;
 
     'eval: loop {
-        if waiting == (true, true)
-            && (message_queues.0.is_empty(), message_queues.1.is_empty()) == (true, true) {
-            break;
-        }
 
         let tokens:Vec<&str> = match active_program {
             Program::Zero => instructions[instr_ptr.0 as usize].split_whitespace().collect(),
@@ -62,11 +61,13 @@ pub fn solve(part: Part) -> i32 {
                     Part::PartTwo => {
                         match active_program {
                             Program::Zero => {
-                                message_queues.1.push(*active_registers.get(&tokens[1]).unwrap());
+                                message_queues.1
+                                    .push_back(*active_registers.get(&tokens[1]).unwrap());
                             },
                             Program::One => {
                                 sent_count += 1;
-                                message_queues.0.push(*active_registers.get(&tokens[1]).unwrap());
+                                message_queues.0
+                                    .push_back(*active_registers.get(&tokens[1]).unwrap());
                             },
                         }
                     },
@@ -105,6 +106,11 @@ pub fn solve(part: Part) -> i32 {
                 *val %= to_mod;
             },
             "rcv" => {
+                if waiting == (true, true)
+                    &&
+                    (message_queues.0.is_empty(), message_queues.1.is_empty()) == (true, true) {
+                    break;
+                }
                 match part {
                     Part::PartOne => if *active_registers.get(&tokens[1]).unwrap() != 0 { break; },
                     Part::PartTwo => {
@@ -117,7 +123,7 @@ pub fn solve(part: Part) -> i32 {
                                 }
                                 else {
                                     let val = active_registers.entry(tokens[1]).or_insert(0);
-                                    *val = message_queues.0.remove(0);
+                                    *val = message_queues.0.pop_front().unwrap();
                                     waiting.0 = false;
                                 }
                             },
@@ -129,7 +135,7 @@ pub fn solve(part: Part) -> i32 {
                                 }
                                 else {
                                     let val = active_registers.entry(tokens[1]).or_insert(0);
-                                    *val = message_queues.1.remove(0);
+                                    *val = message_queues.1.pop_front().unwrap();
                                     waiting.0 = false;
                                 }
                             },
@@ -150,7 +156,6 @@ pub fn solve(part: Part) -> i32 {
             _ => panic!("Unrecognized Instruction"),
         }
         *active_ptr += 1;
-        println!("(Zero: {}, One: {})", message_queues.0.len(), message_queues.1.len());
     }
 
     out = match part {
