@@ -11,13 +11,13 @@ pub fn solve(part: Part) -> i32 {
 
     let step_count:usize = input.trim().parse().unwrap();
 
-    let mut spinlock = vec![0, 1]; // This spinlock is made regardless of step_count choice
-    let mut pos:usize = 1;
-
-    let max_insert = match part {
+    let max_insert:i32 = match part {
         Part::PartOne => 2017,
         Part::PartTwo => 50_000_000,
     };
+
+    let mut spinlock = vec![0,1]; // This spinlock is made regardless of step_count choice
+    let mut pos:usize = 1;
 
     let find_after = match part {
         Part::PartOne => 2017,
@@ -27,13 +27,19 @@ pub fn solve(part: Part) -> i32 {
     for to_insert in INSERT_START..(max_insert + 1) {
         for _ in 0..(step_count) {
             pos += 1;
-            pos %= spinlock.len();
+            pos %= to_insert as usize;
         }
         pos += 1;
-        spinlock.insert(pos , to_insert);
-    }
 
-    println!("{:?}", spinlock);
+        match part {
+            Part::PartOne => spinlock.insert(pos, to_insert),
+            Part::PartTwo => {
+                if pos == 1 { //insert is expensive, and 0 always stays at the front of the list
+                    spinlock.insert(pos, to_insert);
+                }
+            }
+        }
+    }
 
     let mut spinlock_iter = spinlock.iter().cycle();
     spinlock_iter.find(|&&x| x == find_after).unwrap();
