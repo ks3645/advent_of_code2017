@@ -13,7 +13,7 @@ macro_rules! days {
 }
 
 mod utils;
-days!( day23);
+days!( day24);
 
 use utils::Part;
 
