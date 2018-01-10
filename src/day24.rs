@@ -21,7 +21,7 @@ pub fn solve(part: Part) -> i32 {
 
     while !active_bridges.is_empty() {
          let mut new_bridges = Vec::new();
-         for mut bridge in active_bridges.drain(..) {
+         for bridge in active_bridges.drain(..) {
              let old_length = bridge.len();
              for piece in pieces.to_vec() {
                  if !bridge.contains(&piece) {

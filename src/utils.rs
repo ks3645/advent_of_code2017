@@ -5,6 +5,7 @@ use std::ops::Add;
 use std::ops::AddAssign;
 use std::fmt::Write;
 
+#[derive(Debug, PartialEq)]
 pub enum Part {
     PartOne,
     PartTwo,

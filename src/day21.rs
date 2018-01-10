@@ -2,6 +2,7 @@ use utils;
 use utils::Part;
 use std::collections::HashMap;
 use std::fmt;
+use std::fmt::Write;
 
 #[derive(Copy, Clone, PartialEq, Eq, Hash)]
 struct TwoPattern {
@@ -9,7 +10,7 @@ struct TwoPattern {
     b0:char, b1:char,
 }
 
-#[derive(Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Copy, Clone, PartialEq, Eq, Hash, Default)]
 struct ThreePattern {
     a0:char, a1:char, a2:char,
     b0:char, b1:char, b2:char,
@@ -30,7 +31,7 @@ enum ArtPiece {
 }
 
 pub fn solve(part: Part) -> i32 {
-    const START:&str = ".#./..#/###";
+    const START: &str = ".#./..#/###";
 
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 21).unwrap();
@@ -40,12 +41,10 @@ pub fn solve(part: Part) -> i32 {
     let mut two_rules = HashMap::new();
     let mut three_rules = HashMap::new();
 
-    let mut art:Vec<Vec<ArtPiece>> = vec![vec![ArtPiece::Odd(ThreePattern::from(START))]];
-
-    println!("Start: {:?}", art[0][0]);
+    let mut art: Vec<Vec<ArtPiece>> = vec![vec![ArtPiece::Odd(ThreePattern::from(START))]];
 
     for line in input.lines() {
-        let tokens:Vec<&str> = line.split_whitespace().collect();
+        let tokens: Vec<&str> = line.split_whitespace().collect();
         match tokens[0].len() {
             5 => {
                 two_rules.insert(TwoPattern::from(tokens[0]), ThreePattern::from(tokens[2]));
@@ -58,10 +57,13 @@ pub fn solve(part: Part) -> i32 {
         }
     }
 
-    let iterations = 5;
+    let iterations = match part {
+        Part::PartOne => 5,
+        Part::PartTwo => 18,
+    };
 
-    for _ in 0..iterations {
-        let mut new_art:Vec<Vec<ArtPiece>> = Vec::new();
+    for i in 0..iterations {
+        let mut new_art: Vec<Vec<ArtPiece>> = Vec::new();
         for row in 0..art.len() {
             match art[0][0] {
                 ArtPiece::Even(_) => {
@@ -78,8 +80,6 @@ pub fn solve(part: Part) -> i32 {
                         for p in tile.permutations() {
                             match two_rules.get(&p) {
                                 Some(new_tile) => {
-                                    println!("Matching Rule Found: Replacing {:?}with {:?}",
-                                        tile, new_tile);
                                     new_art[row].push(ArtPiece::Odd(*new_tile));
                                     break;
                                 },
@@ -91,13 +91,11 @@ pub fn solve(part: Part) -> i32 {
                         for p in tile.permutations() {
                             match three_rules.get(&p) {
                                 Some(new_tile) => {
-                                    println!("Matching Rule Found: Replacing {:?}with {:?}",
-                                        tile, new_tile);
                                     let new_tiles = new_tile.split();
-                                    new_art[2*row].push(ArtPiece::Even(new_tiles[0]));
-                                    new_art[2*row].push(ArtPiece::Even(new_tiles[1]));
-                                    new_art[2*row+1].push(ArtPiece::Even(new_tiles[2]));
-                                    new_art[2*row+1].push(ArtPiece::Even(new_tiles[3]));
+                                    new_art[2 * row].push(ArtPiece::Even(new_tiles[0]));
+                                    new_art[2 * row].push(ArtPiece::Even(new_tiles[1]));
+                                    new_art[2 * row + 1].push(ArtPiece::Even(new_tiles[2]));
+                                    new_art[2 * row + 1].push(ArtPiece::Even(new_tiles[3]));
                                     break;
                                 },
                                 None => {},
@@ -107,6 +105,94 @@ pub fn solve(part: Part) -> i32 {
                 }
             }
         }
+
+    if (new_art.len() * 3) % 2 == 0 {
+        match new_art[0][0] {
+            ArtPiece::Even(_) => {},
+            ArtPiece::Odd(_) => {
+                //replace Odd tiles with Even tiles
+                let mut new_new_art: Vec<Vec<ArtPiece>> = Vec::new();
+                for row in 0..art.len() / 2 {
+                    new_new_art.push(Vec::new());
+                    new_new_art.push(Vec::new());
+                    new_new_art.push(Vec::new());// each pair of Odd maps to 3 even tiles
+                    for col in 0..art.len() / 2 {
+                        let mut square: [[ThreePattern; 2]; 2] = [[Default::default(); 2]; 2];
+                        if let (&ArtPiece::Odd(a00), &ArtPiece::Odd(a01),
+                            &ArtPiece::Odd(a10), &ArtPiece::Odd(a11))
+                        = (&new_art[row * 2][col * 2], &new_art[row * 2][col * 2 + 1],
+                           &new_art[row * 2 + 1][col * 2], &new_art[row * 2 + 1][col * 2 + 1]) {
+                            square = [[a00, a01],
+                                [a10, a11]];
+                        }
+
+                        let mut first_row =
+                            vec![ArtPiece::Even(TwoPattern {
+                                a0: square[0][0].a0,
+                                a1: square[0][0].a1,
+                                b0: square[0][0].b0,
+                                b1: square[0][0].b1,
+                            }),
+                                 ArtPiece::Even(TwoPattern {
+                                     a0: square[0][0].a2,
+                                     a1: square[0][1].a0,
+                                     b0: square[0][0].b2,
+                                     b1: square[0][1].b0,
+                                 }),
+                                 ArtPiece::Even(TwoPattern {
+                                     a0: square[0][1].a1,
+                                     a1: square[0][1].a2,
+                                     b0: square[0][1].b1,
+                                     b1: square[0][1].b2,
+                                 })];
+                        let mut second_row =
+                            vec![ArtPiece::Even(TwoPattern {
+                                a0: square[0][0].c0,
+                                a1: square[0][0].c1,
+                                b0: square[1][0].a0,
+                                b1: square[1][0].a1,
+                            }),
+                                 ArtPiece::Even(TwoPattern {
+                                     a0: square[0][0].c2,
+                                     a1: square[0][1].c0,
+                                     b0: square[1][0].a2,
+                                     b1: square[1][1].a0,
+                                 }),
+                                 ArtPiece::Even(TwoPattern {
+                                     a0: square[0][1].c1,
+                                     a1: square[0][1].c2,
+                                     b0: square[1][1].a1,
+                                     b1: square[1][1].a2,
+                                 })];
+                        let mut third_row =
+                            vec![ArtPiece::Even(TwoPattern {
+                                a0: square[1][0].b0,
+                                a1: square[1][0].b1,
+                                b0: square[1][0].c0,
+                                b1: square[1][0].c1,
+                            }),
+                                 ArtPiece::Even(TwoPattern {
+                                     a0: square[1][0].b2,
+                                     a1: square[1][1].b0,
+                                     b0: square[1][0].c2,
+                                     b1: square[1][1].c0,
+                                 }),
+                                 ArtPiece::Even(TwoPattern {
+                                     a0: square[1][1].b1,
+                                     a1: square[1][1].b2,
+                                     b0: square[1][1].c1,
+                                     b1: square[1][1].c2,
+                                 })];
+
+                        new_new_art[row * 3].append(&mut first_row);
+                        new_new_art[row * 3 + 1].append(&mut second_row);
+                        new_new_art[row * 3 + 2].append(&mut third_row);
+                    }
+                }
+                new_art = new_new_art;
+            },
+        }
+    }
         art = new_art;
     }
 
@@ -128,6 +214,46 @@ pub fn solve(part: Part) -> i32 {
     out = count;
 
     out
+}
+
+fn print_art(art:&Vec<Vec<ArtPiece>>) {
+    let mut art_string = String::new();
+
+    for row in 0..art.len() {
+        let mut row_string = String::new();
+        let mut rows = Vec::new();
+        match art[0][0] {
+            ArtPiece::Even(_) => {
+                rows.push(String::new());
+                rows.push(String::new());
+            },
+            ArtPiece::Odd(_) => {
+                rows.push(String::new());
+                rows.push(String::new());
+                rows.push(String::new());
+            }
+        }
+
+        for col in 0..art.len() {
+            match art[row][col] {
+                ArtPiece::Even(piece) => {
+                    write!(rows[0], "{}{}  ", piece.a0, piece.a1).unwrap();
+                    write!(rows[1], "{}{}  ", piece.b0, piece.b1).unwrap();
+                },
+                ArtPiece::Odd(piece) => {
+                    write!(rows[0], "{}{}{}  ", piece.a0, piece.a1, piece.a2).unwrap();
+                    write!(rows[1], "{}{}{}  ", piece.b0, piece.b1, piece.b2).unwrap();
+                    write!(rows[2], "{}{}{}  ", piece.c0, piece.c1, piece.c2).unwrap();
+                },
+            }
+        }
+        for line in rows.to_vec() {
+            write!(row_string, "{}\n", line).unwrap();
+        }
+        write!(art_string, "{}\n", row_string).unwrap();
+    }
+
+    println!("{}", art_string);
 }
 
 impl TwoPattern {
@@ -163,7 +289,6 @@ impl TwoPattern {
         if self.a1 == '#' {count+=1;}
         if self.b0 == '#' {count+=1;}
         if self.b1 == '#' {count+=1;}
-        println!("Counted {} pixels on for {:?}", count, self);
         count
     }
 }
@@ -177,9 +302,9 @@ impl fmt::Debug for TwoPattern {
 impl ThreePattern {
     fn rotated90r (&self) -> Self {
         ThreePattern {
-            a0:self.b0, a1:self.a0, a2:self.a1,
-            b0:self.c0, b1:self.b1, b2:self.a2,
-            c0:self.c1, c1:self.c2, c2:self.b2,
+            a0:self.c0, a1:self.b0, a2:self.a0,
+            b0:self.c1, b1:self.b1, b2:self.a1,
+            c0:self.c2, c1:self.b2, c2:self.a2,
         }
     }
 

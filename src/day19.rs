@@ -32,13 +32,9 @@ pub fn solve(part: Part) -> String {
     let mut tokens_visited = Vec::new();
     let mut steps = 0;
 
-    println!("{}", path[0].len());
     loop {
-        println!("Visiting: {}", path[pos.y as usize][pos.x as usize]);
-
         if pos.x < 0 || pos.x >= path[0].len() as i32
             || pos.y < 0 || pos.y >= path.len() as i32 {
-            println!("Edge of maze reached!");
             break;
         }
 
@@ -48,16 +44,13 @@ pub fn solve(part: Part) -> String {
             '+' => {
                 match travel_dir {
                     Direction::Down | Direction::Up => {
-                        println!("Checking Left and Right");
                         let check_left = pos+Point::left();
                         let check_right = pos+Point::right();
                         if !(check_left.x < 0) {
                             match path[check_left.y as usize][check_left.x as usize] {
                                 ' ' | '|' => {
-                                    println!("Left is No Good");
                                 },
                                 _ => {
-                                    println!("Going Left Now");
                                     travel_dir = Direction::Left;
                                 },
                             }
@@ -65,26 +58,21 @@ pub fn solve(part: Part) -> String {
                         if !(check_right.x >= path[0].len() as i32) {
                             match path[check_right.y as usize][check_right.x as usize] {
                                 ' ' | '|' => {
-                                    println!("Right is No Good");
                                 },
                                 _ => {
-                                    println!("Going Right Now");
                                     travel_dir = Direction::Right;
                                 },
                             }
                         }
                     },
                     Direction::Left | Direction::Right => {
-                        println!("Checking Up and Down");
                         let check_up = pos+Point::up();
                         let check_down = pos+Point::down();
                         if !(check_up.y < 0) {
                             match path[check_up.y as usize][check_up.x as usize] {
                                 ' ' | '-' => {
-                                    println!("Up is No Good");
                                 },
                                 _ => {
-                                    println!("Going Up Now");
                                     travel_dir = Direction::Up;
                                 },
                             }
@@ -92,10 +80,8 @@ pub fn solve(part: Part) -> String {
                         if !(check_down.y >= path[0].len() as i32) {
                             match path[check_down.y as usize][check_down.x as usize] {
                                 ' ' | '-' => {
-                                    println!("Down is No Good");
                                 },
                                 _ => {
-                                    println!("Going Down Now");
                                     travel_dir = Direction::Down;
                                 },
                             }
