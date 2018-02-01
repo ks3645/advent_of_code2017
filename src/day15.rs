@@ -1,6 +1,7 @@
 use utils;
 use utils::Part;
 
+// TODO: refactor const spam to facilitate testing
 pub fn solve(part: Part) -> i32 {
     const A_FACTOR:i64 = 16_807;
     const B_FACTOR:i64 = 48_271;
@@ -50,4 +51,20 @@ pub fn solve(part: Part) -> i32 {
     out = judge_count;
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // The above code needs to be refactored for the example test cases to be run easily
+
+    /*
+    #[test]
+    fn test_part_one() {
+    }
+
+    #[test]
+    fn test_part_two() {
+    }*/
 }

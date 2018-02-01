@@ -12,7 +12,7 @@ pub enum Part {
 }
 
 pub fn read_input_to_string(buf:&mut String, day:u8) -> io::Result<usize> {
-    let filename = format!("day{}.txt", day);
+    let filename = format!("input/day{}.txt", day);
     let mut file = File::open(filename).expect("Invalid Day Input");
     file.read_to_string(buf)
 }

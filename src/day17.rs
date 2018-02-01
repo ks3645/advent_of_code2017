@@ -2,11 +2,14 @@ use utils;
 use utils::Part;
 
 pub fn solve(part: Part) -> i32 {
-    const INSERT_START:i32 = 2;
-
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 17).unwrap();
 
+    process_spinlock(input, part)
+}
+
+fn process_spinlock(input:String, part:Part) -> i32 {
+    const INSERT_START:i32 = 2;
     let mut out = 0;
 
     let step_count:usize = input.trim().parse().unwrap();
@@ -48,4 +51,19 @@ pub fn solve(part: Part) -> i32 {
     out = *value;
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(process_spinlock(String::from("3"), Part::PartOne), 638)
+    }
+
+    #[test]
+    fn test_part_two() {
+        assert_eq!(process_spinlock(String::from("3"), Part::PartTwo), 1222153)
+    }
 }

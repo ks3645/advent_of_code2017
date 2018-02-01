@@ -8,6 +8,12 @@ pub fn solve(part: Part) -> u32 {
     let mut pos = String::new();
     utils::read_input_to_string(&mut pos, 3).unwrap();
 
+    do_the_thing(pos, part)
+}
+
+// TODO: Split this into separate functions
+fn do_the_thing(pos:String, part:Part) -> u32 {
+
     let pos: u32 = pos.trim().parse().unwrap();
 
     let mut result: u32 = 0;
@@ -69,4 +75,22 @@ pub fn solve(part: Part) -> u32 {
     }
 
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(do_the_thing(String::from("1"), Part::PartOne), 0);
+        assert_eq!(do_the_thing(String::from("12"), Part::PartOne), 3);
+        assert_eq!(do_the_thing(String::from("23"), Part::PartOne), 2);
+        assert_eq!(do_the_thing(String::from("1024"), Part::PartOne), 31);
+    }
+
+    #[test]
+    fn test_part_two() {
+        //TODO: implement these tests when the function above is split up
+    }
 }

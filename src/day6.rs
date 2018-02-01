@@ -3,10 +3,15 @@ use utils::Part;
 use std::collections::HashMap;
 
 pub fn solve(part: Part) -> u32 {
-    let mut input = String::new();
-    utils::read_input_to_string(&mut input, 6).unwrap();
+    let mut banks = String::new();
+    utils::read_input_to_string(&mut banks, 6).unwrap();
 
-    let mut banks: Vec<u32> = input.split_whitespace()
+    count_cycles(banks, part)
+}
+
+fn count_cycles(banks:String, part:Part) -> u32 {
+
+    let mut banks: Vec<u32> = banks.split_whitespace()
         .map(|s| s.parse().unwrap()).collect();
 
     let mut sum: u32 = 0;
@@ -37,5 +42,20 @@ pub fn solve(part: Part) -> u32 {
     match part {
         Part::PartOne => sum,
         Part::PartTwo => sum - states.get(&banks).unwrap(),
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(count_cycles(String::from("0 2 7 0"), Part::PartOne), 5);
+    }
+
+    #[test]
+    fn test_part_two() {
+        assert_eq!(count_cycles(String::from("0 2 7 0"), Part::PartTwo), 4);
     }
 }

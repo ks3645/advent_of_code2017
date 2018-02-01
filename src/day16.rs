@@ -3,15 +3,19 @@ use utils::Part;
 use std::fmt::Write;
 
 pub fn solve(part: Part) -> String {
-    const SIZE:usize = 16;
-
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 16).unwrap();
 
+    let programs = vec!["a", "b", "c", "d", "e", "f", "g", "h"
+                            , "i", "j", "k", "l", "m", "n", "o", "p"];
+
+    dance_result(input, programs, part)
+}
+
+fn dance_result(input:String, mut programs:Vec<&str>, part:Part) -> String {
     let mut out = String::new();
 
-    let mut programs = vec!["a", "b", "c", "d", "e", "f", "g", "h"
-                        , "i", "j", "k", "l", "m", "n", "o", "p"];
+
 
     let start = programs.to_vec();
 
@@ -93,4 +97,18 @@ pub fn solve(part: Part) -> String {
     out = order;
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let programs = vec!["a","b","c","d","e"];
+        assert_eq!(dance_result(String::from("s1,x3/4,pe/b"), programs,
+                                Part::PartOne), String::from("baedc"));
+    }
+
+    // Don't need a simple test for part two, it's just part one a billion times
 }

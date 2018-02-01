@@ -6,6 +6,10 @@ pub fn solve(part: Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 24).unwrap();
 
+    process_bridges(input, part)
+}
+
+fn process_bridges(input:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut pieces = Vec::new(); //input has no dupe pieces so this should be fine
@@ -116,5 +120,36 @@ impl Component {
 
     fn connects_to(&self, other:Self) -> bool{
         self.two == other.one
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("0/2
+2/2
+2/3
+3/4
+3/5
+0/1
+10/1
+9/10");
+        assert_eq!(process_bridges(test_input, Part::PartOne), 31);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("0/2
+2/2
+2/3
+3/4
+3/5
+0/1
+10/1
+9/10");
+        assert_eq!(process_bridges(test_input, Part::PartTwo), 19);
     }
 }

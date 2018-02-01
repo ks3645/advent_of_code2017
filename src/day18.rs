@@ -12,6 +12,11 @@ pub fn solve(part: Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 18).unwrap();
 
+    do_the_thing(input, part)
+}
+
+//TODO: include this in refactor of all of the instruction-based problems
+fn do_the_thing(input:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut registers:(HashMap<&str, i64>, HashMap<&str,i64>) = (HashMap::new(), HashMap::new());
@@ -164,4 +169,36 @@ pub fn solve(part: Part) -> i32 {
     };
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("set a 1
+add a 2
+mul a a
+mod a 5
+snd a
+set a 0
+rcv a
+jgz a -1
+set a 1
+jgz a -2");
+        assert_eq!(do_the_thing(test_input, Part::PartOne), 4);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("snd 1
+snd 2
+snd p
+rcv a
+rcv b
+rcv c
+rcv d");
+        assert_eq!(do_the_thing(test_input, Part::PartTwo), 3)
+    }
 }

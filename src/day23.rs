@@ -389,3 +389,19 @@ impl<'a> fmt::Debug for Arg<'a> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+   // No tests given in the problem description, part one is somewhat a test of its own
+/*
+    #[test]
+    fn test_part_one() {
+    }
+
+    #[test]
+    fn test_part_two() {
+    }
+    */
+}

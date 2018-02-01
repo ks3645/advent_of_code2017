@@ -8,6 +8,10 @@ pub fn solve(part: Part) -> String {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 19).unwrap();
 
+    process_maze(input, part)
+}
+
+fn process_maze(input:String, part:Part) -> String {
     let mut out = String::new();
 
     let mut path = Vec::new();
@@ -33,8 +37,10 @@ pub fn solve(part: Part) -> String {
     let mut steps = 0;
 
     loop {
-        if pos.x < 0 || pos.x >= path[0].len() as i32
-            || pos.y < 0 || pos.y >= path.len() as i32 {
+        if pos.y < 0 || pos.y >= path.len() as i32 {
+            break;
+        }
+        else if pos.x < 0 || pos.x >= path[pos.y as usize].len() as i32 {
             break;
         }
 
@@ -55,7 +61,7 @@ pub fn solve(part: Part) -> String {
                                 },
                             }
                         }
-                        if !(check_right.x >= path[0].len() as i32) {
+                        if !(check_right.x >= path[check_right.y as usize].len() as i32) {
                             match path[check_right.y as usize][check_right.x as usize] {
                                 ' ' | '|' => {
                                 },
@@ -68,22 +74,24 @@ pub fn solve(part: Part) -> String {
                     Direction::Left | Direction::Right => {
                         let check_up = pos+Point::up();
                         let check_down = pos+Point::down();
-                        if !(check_up.y < 0) {
-                            match path[check_up.y as usize][check_up.x as usize] {
-                                ' ' | '-' => {
-                                },
-                                _ => {
-                                    travel_dir = Direction::Up;
-                                },
+                        if !(check_up.y < 0 ) {
+                            if !(check_up.x >= path[check_up.y as usize].len() as i32) {
+                                match path[check_up.y as usize][check_up.x as usize] {
+                                    ' ' | '-' => {},
+                                    _ => {
+                                        travel_dir = Direction::Up;
+                                    },
+                                }
                             }
                         }
-                        if !(check_down.y >= path[0].len() as i32) {
-                            match path[check_down.y as usize][check_down.x as usize] {
-                                ' ' | '-' => {
-                                },
-                                _ => {
-                                    travel_dir = Direction::Down;
-                                },
+                        if !(check_down.y >= path.len() as i32) {
+                            if!(check_up.x >= path[check_down.y as usize].len() as i32) {
+                                match path[check_down.y as usize][check_down.x as usize] {
+                                    ' ' | '-' => {},
+                                    _ => {
+                                        travel_dir = Direction::Down;
+                                    },
+                                }
                             }
                         }
                     },
@@ -113,4 +121,31 @@ pub fn solve(part: Part) -> String {
     };
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("     |
+     |  +--+
+     A  |  C
+ F---|----E|--+
+     |  |  |  D
+     +B-+  +--+");
+        assert_eq!(process_maze(test_input, Part::PartOne), String::from("ABCDEF"));
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("     |
+     |  +--+
+     A  |  C
+ F---|----E|--+
+     |  |  |  D
+     +B-+  +--+");
+        assert_eq!(process_maze(test_input, Part::PartTwo), String::from("38"));
+    }
 }

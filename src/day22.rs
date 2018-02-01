@@ -9,6 +9,10 @@ pub fn solve(part: Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 22).unwrap();
 
+    process_infection(input, part)
+}
+
+fn process_infection(input:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut grid = HashMap::new();
@@ -96,4 +100,25 @@ pub fn solve(part: Part) -> i32 {
     out = infections;
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("..#
+#..
+...");
+        assert_eq!(process_infection(test_input, Part::PartOne), 5587)
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("..#
+#..
+...");
+        assert_eq!(process_infection(test_input, Part::PartTwo), 2511944)
+    }
 }

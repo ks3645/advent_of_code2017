@@ -5,10 +5,14 @@ use std::fmt::Write;
 use std::collections::HashSet;
 
 pub fn solve(part: Part) -> i32 {
-    const ROWS:usize = 128;
-
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 14).unwrap();
+
+    do_the_thing(input, part)
+}
+
+fn do_the_thing(input:String, part:Part) -> i32 {
+    const ROWS: usize = 128;
 
     let mut out = 0;
 
@@ -71,4 +75,19 @@ pub fn solve(part: Part) -> i32 {
     }
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(do_the_thing(String::from("flqrgnkx"), Part::PartOne), 8108);
+    }
+
+    #[test]
+    fn test_part_two() {
+        assert_eq!(do_the_thing(String::from("flqrgnkx"), Part::PartTwo), 1242);
+    }
 }

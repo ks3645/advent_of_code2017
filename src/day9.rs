@@ -5,6 +5,10 @@ pub fn solve(part:Part) -> i32 {
     let mut stream = String::new();
     utils::read_input_to_string(&mut stream, 9).unwrap();
 
+    process_garbage(stream, part)
+}
+
+fn process_garbage(stream:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut score = 0;
@@ -61,4 +65,37 @@ pub fn solve(part:Part) -> i32 {
     }
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(process_garbage(String::from("{}"), Part::PartOne), 1);
+        assert_eq!(process_garbage(String::from("{{{}}}"), Part::PartOne), 6);
+        assert_eq!(process_garbage(String::from("{{},{}}"), Part::PartOne), 5);
+        assert_eq!(process_garbage(String::from("{{{},{},{{}}}}"), Part::PartOne), 16);
+        assert_eq!(process_garbage(String::from("{<a>,<a>,<a>,<a>}"),
+                                   Part::PartOne), 1);
+        assert_eq!(process_garbage(String::from("{{<ab>},{<ab>},{<ab>},{<ab>}}"),
+                                   Part::PartOne), 9);
+        assert_eq!(process_garbage(String::from("{{<!!>},{<!!>},{<!!>},{<!!>}}"),
+                                   Part::PartOne), 9);
+        assert_eq!(process_garbage(String::from("{{<a!>},{<a!>},{<a!>},{<ab>}}"),
+                                   Part::PartOne), 3);
+    }
+
+    #[test]
+    fn test_part_two() {
+        assert_eq!(process_garbage(String::from("<>"), Part::PartTwo), 0);
+        assert_eq!(process_garbage(String::from("<random characters>"),
+                                   Part::PartTwo), 17);
+        assert_eq!(process_garbage(String::from("<<<<>"), Part::PartTwo), 3);
+        assert_eq!(process_garbage(String::from("<{!>}>"), Part::PartTwo), 2);
+        assert_eq!(process_garbage(String::from("<!!>"), Part::PartTwo), 0);
+        assert_eq!(process_garbage(String::from("<!!!>>"), Part::PartTwo), 0);
+        assert_eq!(process_garbage(String::from("<{o\"i!a,<{i<a>"), Part::PartTwo), 10);
+    }
 }

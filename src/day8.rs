@@ -6,6 +6,11 @@ pub fn solve(part: Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 8).unwrap();
 
+    get_highest_register(input, part)
+}
+
+fn get_highest_register(input:String, part:Part) -> i32 {
+
     let mut out = 0;
     let mut running_max = 0;
 
@@ -55,4 +60,27 @@ pub fn solve(part: Part) -> i32 {
 
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("b inc 5 if a > 1
+a inc 1 if b < 5
+c dec -10 if a >= 1
+c inc -20 if c == 10");
+        assert_eq!(get_highest_register(test_input, Part::PartOne), 1);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("b inc 5 if a > 1
+a inc 1 if b < 5
+c dec -10 if a >= 1
+c inc -20 if c == 10");
+        assert_eq!(get_highest_register(test_input, Part::PartTwo), 10);
+    }
 }

@@ -30,6 +30,8 @@ enum ArtPiece {
     Odd(ThreePattern),
 }
 
+
+// TODO: refactor to allow testing
 pub fn solve(part: Part) -> i32 {
     const START: &str = ".#./..#/###";
 
@@ -387,4 +389,20 @@ impl fmt::Debug for FourPattern {
                 self.c0, self.c1, self.c2, self.c3,
                 self.d0, self.d1, self.d2, self.d3)
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // The above code needs to be refactored to facilitate example case testing
+
+    /*
+    #[test]
+    fn test_part_one() {
+    }
+
+    #[test]
+    fn test_part_two() {
+    }*/
 }

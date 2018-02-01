@@ -5,6 +5,10 @@ pub fn solve(part:Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 13).unwrap();
 
+    do_the_thing(input, part)
+}
+
+fn do_the_thing(input:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut firewall:Vec<(i32,i32)> = Vec::new();
@@ -42,4 +46,27 @@ pub fn solve(part:Part) -> i32 {
     }
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("0: 3
+1: 2
+4: 4
+6: 4");
+        assert_eq!(do_the_thing(test_input, Part::PartOne), 24);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("0: 3
+1: 2
+4: 4
+6: 4");
+        assert_eq!(do_the_thing(test_input, Part::PartTwo), 10);
+    }
 }

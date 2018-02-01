@@ -122,3 +122,15 @@ pub fn solve(part: Part) -> i32 {
 
     out
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // Hard to implement tests given the way the problem input was given, may rectify later
+
+    /*
+    #[test]
+    fn test_part_one() {
+    }*/
+}

@@ -6,6 +6,11 @@ pub fn solve(part:Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 11).unwrap();
 
+    find_distance(input, part)
+}
+
+fn find_distance(input:String, part:Part) -> i32 {
+
     let mut distance = 0;
 
     let steps:Vec<String> = input.trim().split(',')
@@ -36,4 +41,22 @@ pub fn solve(part:Part) -> i32 {
     };
 
     distance
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(find_distance(String::from("ne,ne,ne"), Part::PartOne), 3);
+        assert_eq!(find_distance(String::from("ne,ne,sw,sw"), Part::PartOne), 0);
+        assert_eq!(find_distance(String::from("ne,ne,s,s"), Part::PartOne), 2);
+        assert_eq!(find_distance(String::from("se,sw,se,sw,sw"), Part::PartOne), 3);
+    }
+
+    #[test]
+    fn test_part_two() {
+        // no test case provided in problem description
+    }
 }

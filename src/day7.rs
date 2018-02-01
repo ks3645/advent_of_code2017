@@ -14,6 +14,12 @@ pub fn solve(part: Part) -> String {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 7).unwrap();
 
+    do_the_thing(input, part)
+}
+
+//TODO: split this up into separate functions
+fn do_the_thing(input:String, part:Part) -> String {
+
     let mut out = String::new();
 
     let program_strings: Vec<String> = input.lines()
@@ -71,11 +77,11 @@ fn weigh_tree(tree:&HashMap<String, Program>, root:&str) -> WeighResult {
     let root_node = tree_clone.get(root).unwrap();
     let branches = &root_node.holding;
 
-    let mut weight = root_node.weight;
+    let mut weight:u32 = root_node.weight;
 
     if branches.is_empty() {return WeighResult::Weight(weight);}
 
-    let mut branch_weights = Vec::new();
+    let mut branch_weights:Vec<u32> = Vec::new();
 
     for branch in branches {
         match weigh_tree(&tree, branch) {
@@ -89,7 +95,8 @@ fn weigh_tree(tree:&HashMap<String, Program>, root:&str) -> WeighResult {
     }
 
     if branch_weights.iter().all(|&x| x == *branch_weights.first().unwrap()) {
-        weight += branch_weights.iter().sum();
+        let sum:u32 = branch_weights.iter().sum();
+        weight += sum;
     }
     else {
         let mut culprit = String::new();
@@ -116,4 +123,45 @@ fn weigh_tree(tree:&HashMap<String, Program>, root:&str) -> WeighResult {
     }
 
     WeighResult::Weight(weight)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("pbga (66)
+xhth (57)
+ebii (61)
+havc (66)
+ktlj (57)
+fwft (72) -> ktlj, cntj, xhth
+qoyq (66)
+padx (45) -> pbga, havc, qoyq
+tknk (41) -> ugml, padx, fwft
+jptl (61)
+ugml (68) -> gyxo, ebii, jptl
+gyxo (61)
+cntj (57)");
+        assert_eq!(do_the_thing(test_input, Part::PartOne), String::from("tknk"));
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("pbga (66)
+xhth (57)
+ebii (61)
+havc (66)
+ktlj (57)
+fwft (72) -> ktlj, cntj, xhth
+qoyq (66)
+padx (45) -> pbga, havc, qoyq
+tknk (41) -> ugml, padx, fwft
+jptl (61)
+ugml (68) -> gyxo, ebii, jptl
+gyxo (61)
+cntj (57)");
+        assert_eq!(do_the_thing(test_input, Part::PartTwo), String::from("60"));
+    }
 }

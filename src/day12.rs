@@ -7,6 +7,10 @@ pub fn solve(part:Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 12).unwrap();
 
+    process_groups(input, part)
+}
+
+fn process_groups(input:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut village:HashMap<i32, Vec<i32>> = HashMap::new();
@@ -61,4 +65,33 @@ pub fn solve(part:Part) -> i32 {
     };
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        let test_input = String::from("0 <-> 2
+1 <-> 1
+2 <-> 0, 3, 4
+3 <-> 2, 4
+4 <-> 2, 3, 6
+5 <-> 6
+6 <-> 4, 5");
+        assert_eq!(process_groups(test_input, Part::PartOne), 6);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("0 <-> 2
+1 <-> 1
+2 <-> 0, 3, 4
+3 <-> 2, 4
+4 <-> 2, 3, 6
+5 <-> 6
+6 <-> 4, 5");
+        assert_eq!(process_groups(test_input, Part::PartTwo), 2);
+    }
 }

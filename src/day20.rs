@@ -29,6 +29,10 @@ pub fn solve(part: Part) -> i32 {
     let mut input = String::new();
     utils::read_input_to_string(&mut input, 20).unwrap();
 
+    simulate_particles(input, part)
+}
+
+fn simulate_particles(input:String, part:Part) -> i32 {
     let mut out = 0;
 
     let mut particles = HashMap::new();
@@ -94,4 +98,25 @@ pub fn solve(part: Part) -> i32 {
     }
 
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_part_one() {
+        assert_eq!(simulate_particles(
+            String::from("p=< 3,0,0>, v=< 2,0,0>, a=<-1,0,0>\n\
+                                p=< 4,0,0>, v=< 0,0,0>, a=<-2,0,0>"), Part::PartOne), 0);
+    }
+
+    #[test]
+    fn test_part_two() {
+        let test_input = String::from("p=<-6,0,0>, v=< 3,0,0>, a=< 0,0,0>
+p=<-4,0,0>, v=< 2,0,0>, a=< 0,0,0>
+p=<-2,0,0>, v=< 1,0,0>, a=< 0,0,0>
+p=< 3,0,0>, v=<-1,0,0>, a=< 0,0,0>");
+        assert_eq!(simulate_particles(test_input, Part::PartTwo), 1)
+    }
 }
